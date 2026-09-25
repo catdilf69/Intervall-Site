@@ -1,0 +1,8 @@
+const phases={work:{seconds:45,color:'#741511'},rest:{seconds:15,color:'#588157'},reset:{seconds:60,color:'#2b2d42'}};
+let selectedPhase="work",remaining=45,running=false,deadline=0,ticker;
+const play=document.querySelector('#play'),clock=document.querySelector('.clock');
+function paint(){document.querySelector('#minutes').textContent=String(Math.floor(remaining/60)).padStart(2,'0');document.querySelector('#seconds').textContent=String(remaining%60).padStart(2,'0');clock.setAttribute('aria-label',`${remaining} seconds`)}
+function stop(){running=false;clearInterval(ticker);play.innerHTML='Try a little movement <span aria-hidden="true">▶</span>';play.setAttribute('aria-label','Start timer preview')}
+play.addEventListener('click',()=>{if(running){remaining=Math.max(0,Math.ceil((deadline-Date.now())/1000));stop();paint();return}if(remaining===0)remaining=phases[selectedPhase].seconds;running=true;deadline=Date.now()+remaining*1000;play.innerHTML='Take a breather <span aria-hidden="true">Ⅱ</span>';play.setAttribute('aria-label','Pause timer preview');ticker=setInterval(()=>{remaining=Math.max(0,Math.ceil((deadline-Date.now())/1000));paint();if(!remaining)stop()},150);paint()});
+document.querySelectorAll('.phase').forEach(button=>button.addEventListener('click',()=>{stop();selectedPhase=button.dataset.phase;const phase=phases[selectedPhase];remaining=phase.seconds;document.querySelector('#demo').style.background=phase.color;document.querySelectorAll('.phase').forEach(b=>{b.classList.toggle('active',b===button);b.setAttribute('aria-pressed',String(b===button))});paint()}));
+document.querySelector('#year').textContent=new Date().getFullYear();
